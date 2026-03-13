@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+{% block title %}Login — SIKIKA{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 440px; margin-top: 80px;">
+    <div class="card-dark p-4">
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; margin-bottom:24px;">Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            {% if form.errors %}
+            <div class="text-danger mb-3" style="font-size:13px;">Invalid username or password.</div>
+            {% endif %}
+            <button type="submit" class="btn btn-sikika w-100 mt-2">Login</button>
+        </form>
+        <p class="text-center mt-3" style="color:rgba(255,255,255,0.4); font-size:14px;">
+            No account? <a href="{% url 'register' %}" style="color:#e8a838;">Register</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

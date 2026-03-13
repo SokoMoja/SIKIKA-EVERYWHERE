@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+{% block title %}Join Session — SIKIKA{% endblock %}
+{% block content %}
+<div class="container" style="max-width:500px; margin-top:60px;">
+    <div class="card-dark p-4">
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; margin-bottom:24px;">Join a Lecture</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Session Code</label>
+                {{ form.session_code }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Accessibility Mode</label>
+                {{ form.mode }}
+            </div>
+            <button type="submit" class="btn btn-sikika w-100 mt-2">Join Session</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    input[type="text"], select {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+        padding: 10px 14px;
+        width: 100%;
+    }
+    select { appearance: auto; }
+</style>
+{% endblock %}

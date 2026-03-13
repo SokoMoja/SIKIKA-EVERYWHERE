@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+{% block title %}Register — SIKIKA{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 440px; margin-top: 80px;">
+    <div class="card-dark p-4">
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; margin-bottom:24px;">Create Account</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="text-danger mt-1" style="font-size:13px;">{{ field.errors.0 }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-sikika w-100 mt-2">Register</button>
+        </form>
+        <p class="text-center mt-3" style="color:rgba(255,255,255,0.4); font-size:14px;">
+            Already have an account? <a href="{% url 'login' %}" style="color:#e8a838;">Login</a>
+        </p>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select, select, input[type="text"], input[type="password"] {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+        padding: 10px 14px;
+        width: 100%;
+    }
+    select { appearance: auto; }
+</style>
+{% endblock %}

@@ -1,0 +1,396 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ session.title }} — {{ mode|upper }} — SIKIKA{% endblock %}
+
+{% block extra_css %}
+#captionBox {
+    min-height: 50vh; max-height: 70vh; overflow-y: auto;
+    background: rgba(0,0,0,0.3); border-radius: 14px;
+    padding: 30px; font-size: 22px; line-height: 1.9;
+    color: rgba(255,255,255,0.85);
+}
+.term-highlight {
+    color: var(--orange);
+    border-bottom: 1px dashed rgba(232,168,56,0.4);
+    cursor: help; position: relative;
+}
+/* Rich tooltip on click */
+.term-tooltip {
+    position: fixed; z-index: 9999;
+    background: var(--navy-light); border: 1px solid var(--orange);
+    border-radius: 10px; padding: 12px 16px; max-width: 300px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5); font-size: 14px;
+}
+.term-tooltip .tt-term { color: var(--orange); font-weight: 600; font-size: 15px; }
+.term-tooltip .tt-def { color: var(--text-secondary); margin-top: 4px; }
+
+.interim-text { color: rgba(255,255,255,0.35); font-style: italic; }
+.live-indicator {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(232,64,64,0.1); border: 1px solid rgba(232,64,64,0.2);
+    border-radius: 100px; padding: 4px 14px;
+    font-size: 12px; color: #e84040; font-weight: 600; letter-spacing: 1px;
+}
+.live-dot { width:7px; height:7px; background:#e84040; border-radius:50%; animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.mode-indicator {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 14px; border-radius: 100px; font-size: 12px; font-weight: 500;
+}
+.sign-area {
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px;
+    min-height: 160px; background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06); border-radius: 14px;
+    margin-top: 16px; font-size: 56px; padding: 20px;
+}
+/* Student controls bar */
+.student-controls {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 0; margin-top: 8px;
+}
+.ctrl-btn {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    color: var(--text-secondary); border-radius: 8px; padding: 6px 14px;
+    font-size: 13px; cursor: pointer; transition: all 0.2s;
+}
+.ctrl-btn:hover, .ctrl-btn.active { border-color: var(--orange); color: var(--orange); }
+/* AI intelligence bar */
+.ai-bar {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 8px 16px; background: rgba(56,212,232,0.04);
+    border: 1px solid rgba(56,212,232,0.1); border-radius: 10px;
+    margin-bottom: 10px; font-size: 12px;
+}
+.ai-bar-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+.ai-bar-value { font-weight: 600; color: var(--cyan); font-family: var(--font-heading); }
+.complexity-mini {
+    display: inline-block; width: 60px; height: 5px;
+    background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;
+    vertical-align: middle;
+}
+.complexity-mini-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.smart-term-count {
+    background: rgba(232,168,56,0.1); color: var(--orange);
+    padding: 2px 8px; border-radius: 100px; font-weight: 600;
+}
+/* Font size classes for caption box */
+.caption-small #captionBox { font-size: 16px; line-height: 1.7; }
+.caption-medium #captionBox { font-size: 22px; line-height: 1.9; }
+.caption-large #captionBox { font-size: 28px; line-height: 2; }
+.caption-xlarge #captionBox { font-size: 36px; line-height: 2.1; }
+/* Slide display */
+.slide-display { text-align:center; margin-top:16px; }
+.slide-display img { max-width:100%; max-height:300px; border-radius:10px; border:1px solid var(--border); }
+.slide-display p { font-size:13px; color:var(--text-secondary); margin-top:8px; }
+/* Reconnect banner */
+.reconnect-banner {
+    position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+    background: rgba(232,64,64,0.9); color: #fff;
+    padding: 8px 24px; border-radius: 8px; font-size: 13px; z-index: 999;
+    display: none;
+}
+{% endblock %}
+
+{% block content %}
+<div class="reconnect-banner" id="reconnectBanner">Connection lost. Reconnecting...</div>
+
+<div class="container mt-4" id="sessionWrapper">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h4 style="font-family:var(--font-heading); font-weight:600; margin-bottom:4px;">{{ session.title }}</h4>
+            <p class="text-muted mb-0" style="font-size:13px;">{{ session.course_code }} &middot; Code: {{ session.session_code }}</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            {% if mode == 'caption' %}
+            <span class="mode-indicator badge-caption">🔤 Smart Captions</span>
+            {% elif mode == 'audio' %}
+            <span class="mode-indicator badge-audio">🔊 Audio Description</span>
+            {% elif mode == 'sign' %}
+            <span class="mode-indicator badge-sign">🤟 Sign Language</span>
+            {% endif %}
+            <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+        </div>
+    </div>
+
+    <!-- AI Intelligence Bar -->
+    <div class="ai-bar" id="aiBar">
+        <div class="ai-bar-item">🧠 <span style="font-size:10px; letter-spacing:1px; color:var(--cyan);">AI</span></div>
+        <div class="ai-bar-item">WPM: <span class="ai-bar-value" id="aiWPM">—</span></div>
+        <div class="ai-bar-item">
+            Complexity:
+            <div class="complexity-mini">
+                <div class="complexity-mini-fill" id="miniGauge" style="width:0%; background:var(--green);"></div>
+            </div>
+            <span class="ai-bar-value" id="aiComplexLabel">—</span>
+        </div>
+        <div class="ai-bar-item">Terms: <span class="smart-term-count" id="aiTermCount">0</span></div>
+    </div>
+
+    <!-- Caption area -->
+    <div id="captionBox" role="log" aria-live="polite" aria-label="Live captions">
+        <p style="color:var(--text-muted); font-style:italic;">Waiting for lecturer to start speaking...</p>
+    </div>
+    <div id="interimLine" class="interim-text" style="padding:10px 30px; min-height:30px;" aria-live="off"></div>
+
+    {% if mode == 'sign' %}
+    <div class="sign-area" id="signArea" role="img" aria-label="Sign language indicators">🤟</div>
+    {% endif %}
+
+    <!-- Slide display for students -->
+    <div class="slide-display" id="slideDisplay" style="display:none;">
+        <p id="slideLabel" style="font-size:12px; color:var(--text-muted);">Slide</p>
+        {% for slide in slides %}
+        <img src="{{ slide.image.url }}" id="slideImg{{ slide.slide_number }}" style="display:none;" alt="Slide {{ slide.slide_number }}">
+        {% endfor %}
+        <p id="slideDescription" style="font-style:italic;"></p>
+    </div>
+
+    <!-- Student Controls -->
+    <div class="student-controls">
+        <!-- Font size -->
+        <button class="ctrl-btn" onclick="setCaptionSize('small')" title="Small text">A</button>
+        <button class="ctrl-btn active" onclick="setCaptionSize('medium')" title="Medium text">A+</button>
+        <button class="ctrl-btn" onclick="setCaptionSize('large')" title="Large text">A++</button>
+        <button class="ctrl-btn" onclick="setCaptionSize('xlarge')" title="Extra large text">A+++</button>
+        <span style="color:var(--border);">|</span>
+        <!-- Scroll control -->
+        <button class="ctrl-btn" id="btnScroll" onclick="toggleAutoScroll()" title="Auto-scroll">📜 Auto-scroll ON</button>
+
+        {% if mode == 'audio' %}
+        <span style="color:var(--border);">|</span>
+        <button id="btnToggleAudio" class="ctrl-btn active" onclick="toggleAudio()">🔊 Audio On</button>
+        <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1" style="width:100px;" title="Speech speed">
+        <span style="font-size:11px; color:var(--text-muted);">Speed</span>
+        {% endif %}
+
+        <span style="color:var(--border);">|</span>
+        <button class="ctrl-btn" onclick="downloadLiveTranscript()" title="Download transcript">📥 Save</button>
+        <a href="{% url 'dashboard' %}" class="ctrl-btn" style="text-decoration:none;">← Leave</a>
+    </div>
+</div>
+
+<!-- Term tooltip container -->
+<div class="term-tooltip" id="termTooltip" style="display:none;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const sessionCode = '{{ session.session_code }}';
+const mode = '{{ mode }}';
+const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+let ws;
+let audioEnabled = true;
+let started = false;
+let autoScroll = true;
+let GLOSSARY = {};
+let allSegments = [];
+
+// Load glossary from API
+fetch('/api/glossary/')
+    .then(r => r.json())
+    .then(data => {
+        data.forEach(t => { GLOSSARY[t.term.toLowerCase()] = t.definition; });
+        console.log('Glossary loaded:', Object.keys(GLOSSARY).length, 'terms');
+    })
+    .catch(() => console.log('Glossary API unavailable, using fallback'));
+
+// WebSocket with auto-reconnect
+function connectWS() {
+    ws = new WebSocket(wsProtocol + '//' + window.location.host + '/ws/lecture/' + sessionCode + '/');
+
+    ws.onopen = () => {
+        console.log('Connected');
+        document.getElementById('reconnectBanner').style.display = 'none';
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === 'transcript') {
+            if (!started) {
+                document.getElementById('captionBox').innerHTML = '';
+                started = true;
+            }
+
+            if (data.is_final) {
+                allSegments.push(data.text);
+                // Use server-detected terms for smarter highlighting
+                appendCaption(data.text, data.detected_terms || []);
+                document.getElementById('interimLine').textContent = '';
+                if (mode === 'audio' && audioEnabled) speakText(data.text);
+                // Update AI bar with server data
+                updateAIBar(data);
+            } else {
+                document.getElementById('interimLine').textContent = data.text;
+            }
+        }
+        else if (data.type === 'slide_change') {
+            showSlide(data.slide_number, data.description, data.total_slides);
+        }
+        else if (data.type === 'session_start') {
+            if (!started) {
+                document.getElementById('captionBox').innerHTML = '';
+                started = true;
+            }
+        }
+    };
+
+    ws.onclose = () => {
+        document.getElementById('reconnectBanner').style.display = 'block';
+        setTimeout(connectWS, 2000);
+    };
+}
+connectWS();
+
+function appendCaption(text, serverDetectedTerms) {
+    const box = document.getElementById('captionBox');
+    const span = document.createElement('span');
+    let processed = text;
+
+    // Use server-detected terms first (more reliable), then fallback to client glossary
+    const termsToHighlight = (serverDetectedTerms && serverDetectedTerms.length > 0)
+        ? serverDetectedTerms
+        : Object.keys(GLOSSARY);
+
+    for (const term of termsToHighlight) {
+        const def = GLOSSARY[term.toLowerCase()] || 'Technical term detected by AI';
+        const regex = new RegExp('\\b(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')\\b', 'gi');
+        const safedef = def.replace(/"/g, '&quot;');
+        processed = processed.replace(regex, '<span class="term-highlight" data-term="' + term + '" data-def="' + safedef + '" onclick="showTermTooltip(event, this)">$1</span>');
+    }
+
+    span.innerHTML = processed + ' ';
+    box.appendChild(span);
+    if (autoScroll) box.scrollTop = box.scrollHeight;
+
+    if (mode === 'sign') updateSignArea(text);
+}
+
+// AI Bar: Update with server-side intelligence data
+let aiTermsDetected = new Set();
+function updateAIBar(data) {
+    if (data.wpm > 0) {
+        document.getElementById('aiWPM').textContent = Math.round(data.wpm);
+    }
+    if (data.complexity > 0) {
+        const gauge = document.getElementById('miniGauge');
+        gauge.style.width = data.complexity + '%';
+        if (data.complexity < 40) gauge.style.background = 'var(--green)';
+        else if (data.complexity < 70) gauge.style.background = 'var(--orange)';
+        else gauge.style.background = '#e84040';
+        document.getElementById('aiComplexLabel').textContent = data.complexity_label || '';
+    }
+    if (data.detected_terms) {
+        data.detected_terms.forEach(t => aiTermsDetected.add(t));
+        document.getElementById('aiTermCount').textContent = aiTermsDetected.size;
+    }
+}
+
+// Rich term tooltip
+function showTermTooltip(e, el) {
+    e.stopPropagation();
+    const tip = document.getElementById('termTooltip');
+    tip.innerHTML = '<div class="tt-term">' + el.dataset.term + '</div><div class="tt-def">' + el.dataset.def + '</div>';
+    tip.style.display = 'block';
+    tip.style.left = Math.min(e.clientX, window.innerWidth - 320) + 'px';
+    tip.style.top = (e.clientY + 20) + 'px';
+}
+document.addEventListener('click', () => { document.getElementById('termTooltip').style.display = 'none'; });
+
+// Audio mode — text-to-speech
+function speakText(text) {
+    if (!('speechSynthesis' in window)) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = parseFloat(document.getElementById('speechRate')?.value || 1);
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+}
+
+function toggleAudio() {
+    audioEnabled = !audioEnabled;
+    const btn = document.getElementById('btnToggleAudio');
+    btn.textContent = audioEnabled ? '🔊 Audio On' : '🔇 Audio Off';
+    btn.classList.toggle('active', audioEnabled);
+    if (!audioEnabled) window.speechSynthesis.cancel();
+}
+
+// Caption font size
+function setCaptionSize(size) {
+    const wrapper = document.getElementById('sessionWrapper');
+    wrapper.classList.remove('caption-small', 'caption-medium', 'caption-large', 'caption-xlarge');
+    wrapper.classList.add('caption-' + size);
+    localStorage.setItem('sikika_caption_size', size);
+    document.querySelectorAll('.student-controls .ctrl-btn').forEach(b => {
+        if (['A', 'A+', 'A++', 'A+++'].includes(b.textContent)) b.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+// Auto-scroll toggle
+function toggleAutoScroll() {
+    autoScroll = !autoScroll;
+    document.getElementById('btnScroll').textContent = autoScroll ? '📜 Auto-scroll ON' : '📜 Auto-scroll OFF';
+    document.getElementById('btnScroll').classList.toggle('active', autoScroll);
+}
+
+// Slide display
+function showSlide(num, desc, total) {
+    const display = document.getElementById('slideDisplay');
+    display.style.display = 'block';
+    document.getElementById('slideLabel').textContent = 'Slide ' + num + ' of ' + total;
+    document.querySelectorAll('[id^="slideImg"]').forEach(img => img.style.display = 'none');
+    const img = document.getElementById('slideImg' + num);
+    if (img) img.style.display = 'inline-block';
+    document.getElementById('slideDescription').textContent = desc || '';
+
+    if (mode === 'audio' && audioEnabled && desc) {
+        speakText('Slide ' + num + '. ' + desc);
+    }
+}
+
+// Sign language
+const SIGN_MAP = {
+    'hello':'👋','yes':'👍','no':'👎','question':'❓','important':'❗',
+    'stop':'✋','good':'👍','think':'🤔','understand':'💡','learn':'📖',
+    'write':'✍️','read':'📖','listen':'👂','see':'👀','help':'🆘',
+    'thank':'🙏','please':'🤲','sorry':'😔','again':'🔄','more':'➕',
+    'explain':'💬','example':'📌','note':'📝','test':'📋','answer':'✅',
+};
+
+function updateSignArea(text) {
+    const area = document.getElementById('signArea');
+    if (!area) return;
+    const words = text.toLowerCase().split(/\s+/);
+    let signs = [];
+    for (const word of words) {
+        if (SIGN_MAP[word]) signs.push('<span title="' + word + '">' + SIGN_MAP[word] + '</span>');
+    }
+    if (signs.length > 0) area.innerHTML = signs.join(' ');
+}
+
+// Download live transcript
+function downloadLiveTranscript() {
+    if (allSegments.length === 0) { alert('No transcript yet.'); return; }
+    const text = 'SIKIKA Live Transcript\\n{{ session.title }}\\n\\n' + allSegments.join('\\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'transcript_{{ session.session_code }}.txt';
+    a.click();
+}
+
+// Restore saved caption size
+(function() {
+    const saved = localStorage.getItem('sikika_caption_size');
+    if (saved) {
+        document.getElementById('sessionWrapper').classList.add('caption-' + saved);
+    }
+})();
+
+// Heartbeat
+setInterval(() => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'heartbeat' }));
+    }
+}, 30000);
+</script>
+{% endblock %}

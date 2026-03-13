@@ -1,0 +1,207 @@
+{% extends 'core/base.html' %}
+{% block title %}SIKIKA — To Be Heard{% endblock %}
+
+{% block extra_css %}
+.hero { min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; }
+.hero-tagline { font-family: var(--font-heading); font-size: 13px; letter-spacing: 6px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 30px; }
+.hero-title { font-family: var(--font-heading); font-size: 80px; font-weight: 700; color: var(--orange); margin-bottom: 16px; }
+.hero-desc { font-size: 22px; color: var(--text-secondary); max-width: 580px; line-height: 1.7; margin-bottom: 40px; }
+.modes-row { display: flex; gap: 40px; color: var(--text-muted); font-size: 14px; margin-top: 20px; }
+
+.section { padding: 80px 0; }
+.section-title { font-family: var(--font-heading); font-size: 36px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+.section-subtitle { text-align: center; color: var(--text-secondary); font-size: 16px; margin-bottom: 50px; }
+
+.step-card { text-align: center; padding: 30px 20px; }
+.step-number { font-family: var(--font-heading); font-size: 48px; font-weight: 700; color: var(--orange); opacity: 0.3; }
+.step-icon { font-size: 40px; margin-bottom: 12px; }
+.step-title { font-weight: 600; font-size: 18px; margin-bottom: 8px; }
+.step-desc { color: var(--text-secondary); font-size: 14px; }
+
+.mode-card { background: var(--navy-light); border: 1px solid var(--border); border-radius: 16px; padding: 30px; text-align: center; transition: all 0.3s; }
+.mode-card:hover { border-color: var(--orange); transform: translateY(-4px); }
+.mode-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+.mode-title { font-family: var(--font-heading); font-weight: 600; font-size: 20px; margin-bottom: 8px; }
+.mode-desc { color: var(--text-secondary); font-size: 14px; }
+
+.stat-box { text-align: center; padding: 20px; }
+.stat-number { font-family: var(--font-heading); font-size: 48px; font-weight: 700; color: var(--orange); }
+.stat-label { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
+
+.cta-section { background: var(--navy-light); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 60px 0; text-align: center; }
+.cta-title { font-family: var(--font-heading); font-size: 28px; font-weight: 700; margin-bottom: 24px; }
+
+.footer { padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 13px; }
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero" aria-label="Welcome to SIKIKA">
+    <p class="hero-tagline">Real-time Lecture Accessibility</p>
+    <h1 class="hero-title">SIKIKA</h1>
+    <p class="hero-desc">
+        AI-powered platform that converts live lectures into smart captions, audio descriptions, and sign language — on any device, in real time.
+    </p>
+    <div class="d-flex gap-3">
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn btn-sikika btn-lg">Go to Dashboard</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-sikika btn-lg">Get Started Free</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-sikika btn-lg">Login</a>
+        {% endif %}
+    </div>
+    <div class="modes-row" aria-label="Available modes">
+        <span>🔤 Smart Captions</span>
+        <span>🔊 Audio Description</span>
+        <span>🤟 Sign Language</span>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" aria-label="How it works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Three simple steps to make any lecture accessible</p>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon">🎙️</div>
+                    <h3 class="step-title">Lecturer Speaks</h3>
+                    <p class="step-desc">Lecturer starts a session and speaks naturally. SIKIKA captures speech in real-time using the browser's microphone.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon">⚡</div>
+                    <h3 class="step-title">AI Processes</h3>
+                    <p class="step-desc">Speech is converted to text instantly, technical terms are detected and highlighted with definitions.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon">📱</div>
+                    <h3 class="step-title">Student Receives</h3>
+                    <p class="step-desc">Students join with a code and choose their preferred mode — captions, audio, or sign language.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- THREE MODES -->
+<section class="section" style="background: var(--navy-light);" aria-label="Accessibility modes">
+    <div class="container">
+        <h2 class="section-title">Three Modes, One Mission</h2>
+        <p class="section-subtitle">Every student deserves equal access to education</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="mode-card">
+                    <span class="mode-icon">🔤</span>
+                    <h3 class="mode-title">Smart Captions</h3>
+                    <p class="mode-desc">Live scrolling captions with technical term highlighting, inline definitions, and adjustable font sizes. For deaf and hard-of-hearing students.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mode-card">
+                    <span class="mode-icon">🔊</span>
+                    <h3 class="mode-title">Audio Description</h3>
+                    <p class="mode-desc">Text-to-speech narration of live captions and slide descriptions with adjustable speed. For blind and low-vision students.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mode-card">
+                    <span class="mode-icon">🤟</span>
+                    <h3 class="mode-title">Sign Language</h3>
+                    <p class="mode-desc">Live captions paired with visual sign language indicators for key terms. Combines text and visual sign cues.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- IMPACT STATS -->
+<section class="section" aria-label="Impact statistics">
+    <div class="container">
+        <h2 class="section-title">The Problem We're Solving</h2>
+        <p class="section-subtitle">Millions face barriers to education every day</p>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">466M</div>
+                    <div class="stat-label">People with disabling hearing loss worldwide</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">2.2B</div>
+                    <div class="stat-label">People with vision impairment globally</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">75%</div>
+                    <div class="stat-label">Of deaf students lack classroom accommodations</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Real-time lecture tools designed for African universities</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" style="background: var(--navy-light);" aria-label="Features">
+    <div class="container">
+        <h2 class="section-title">Built for Real Classrooms</h2>
+        <p class="section-subtitle">Features that make a difference</p>
+        <div class="row g-4">
+            {% for icon, title, desc in features %}
+            <div class="col-md-4 col-lg-3">
+                <div class="card-dark p-3 text-center h-100">
+                    <div style="font-size:28px; margin-bottom:8px;">{{ icon }}</div>
+                    <h4 style="font-size:15px; font-weight:600;">{{ title }}</h4>
+                    <p style="font-size:13px; color:var(--text-secondary);">{{ desc }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-md-4 col-lg-3"><div class="card-dark p-3 text-center h-100"><div style="font-size:28px; margin-bottom:8px;">⚡</div><h4 style="font-size:15px; font-weight:600;">Real-time</h4><p style="font-size:13px; color:var(--text-secondary);">Sub-second latency via WebSockets</p></div></div>
+            <div class="col-md-4 col-lg-3"><div class="card-dark p-3 text-center h-100"><div style="font-size:28px; margin-bottom:8px;">📖</div><h4 style="font-size:15px; font-weight:600;">Smart Glossary</h4><p style="font-size:13px; color:var(--text-secondary);">70+ terms auto-highlighted with definitions</p></div></div>
+            <div class="col-md-4 col-lg-3"><div class="card-dark p-3 text-center h-100"><div style="font-size:28px; margin-bottom:8px;">🖥️</div><h4 style="font-size:15px; font-weight:600;">Slide Support</h4><p style="font-size:13px; color:var(--text-secondary);">Upload slides with AI descriptions</p></div></div>
+            <div class="col-md-4 col-lg-3"><div class="card-dark p-3 text-center h-100"><div style="font-size:28px; margin-bottom:8px;">📝</div><h4 style="font-size:15px; font-weight:600;">Transcripts</h4><p style="font-size:13px; color:var(--text-secondary);">Full post-session transcripts with download</p></div></div>
+            <div class="col-md-4 col-lg-3"><div class="card-dark p-3 text-center h-100"><div style="font-size:28px; margin-bottom:8px;">♿</div><h4 style="font-size:15px; font-weight:600;">Accessible UI</h4><p style="font-size:13px; color:var(--text-secondary);">High contrast, dyslexia font, ARIA labels</p></div></div>
+            <div class="col-md-4 col-lg-3"><div class="card-dark p-3 text-center h-100"><div style="font-size:28px; margin-bottom:8px;">🔒</div><h4 style="font-size:15px; font-weight:600;">Private Sessions</h4><p style="font-size:13px; color:var(--text-secondary);">Unique codes ensure only enrolled students join</p></div></div>
+            <div class="col-md-4 col-lg-3"><div class="card-dark p-3 text-center h-100"><div style="font-size:28px; margin-bottom:8px;">📊</div><h4 style="font-size:15px; font-weight:600;">Analytics</h4><p style="font-size:13px; color:var(--text-secondary);">Session duration, attendance, mode breakdown</p></div></div>
+            <div class="col-md-4 col-lg-3"><div class="card-dark p-3 text-center h-100"><div style="font-size:28px; margin-bottom:8px;">🌍</div><h4 style="font-size:15px; font-weight:600;">Works Anywhere</h4><p style="font-size:13px; color:var(--text-secondary);">Browser-based — no app download needed</p></div></div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" aria-label="Call to action">
+    <div class="container">
+        <h2 class="cta-title">Ready to Make Your Lectures Accessible?</h2>
+        <div class="d-flex justify-content-center gap-4">
+            {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-sikika btn-lg">I'm a Lecturer</a>
+            <a href="{% url 'register' %}" class="btn btn-outline-sikika btn-lg">I'm a Student</a>
+            {% else %}
+            <a href="{% url 'dashboard' %}" class="btn btn-sikika btn-lg">Go to Dashboard</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" role="contentinfo">
+    <p>SIKIKA — "To Be Heard" in Swahili</p>
+    <p style="margin-top:4px;">Built by CAMPUS_IQ for USIU-Africa Innovation Challenge 2026</p>
+</footer>
+{% endblock %}

@@ -1,0 +1,360 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ session.title }} — SIKIKA{% endblock %}
+
+{% block extra_css %}
+.session-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; }
+.mic-status { width: 12px; height: 12px; border-radius: 50%; background: #555; }
+.mic-status.active { background: #e84040; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.timer { font-family: var(--font-heading); font-size: 24px; font-weight: 600; color: var(--text-secondary); letter-spacing: 2px; }
+.slide-panel { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 16px; margin-top: 16px; }
+.slide-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; border: 2px solid transparent; cursor: pointer; }
+.slide-thumb.active { border-color: var(--orange); }
+.attendee-breakdown { display: flex; gap: 16px; font-size: 13px; }
+.attendee-breakdown span { display: flex; align-items: center; gap: 4px; }
+/* AI Intelligence Panel */
+.ai-panel {
+    background: linear-gradient(135deg, rgba(232,168,56,0.05) 0%, rgba(56,212,232,0.03) 100%);
+    border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+}
+.ai-metric {
+    text-align: center; padding: 12px 8px;
+    background: rgba(0,0,0,0.15); border-radius: 10px;
+}
+.ai-metric-value { font-size: 22px; font-weight: 700; font-family: var(--font-heading); color: var(--orange); }
+.ai-metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 2px; }
+.complexity-gauge { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.complexity-gauge-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+.detected-terms-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; max-height: 80px; overflow-y: auto; }
+.ai-term-tag {
+    font-size: 11px; padding: 2px 10px; border-radius: 100px;
+    background: rgba(232,168,56,0.1); color: var(--orange);
+    border: 1px solid rgba(232,168,56,0.2);
+    animation: fadeInTerm 0.4s ease;
+}
+@keyframes fadeInTerm { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+.ai-badge-live {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 600; letter-spacing: 1px;
+    color: var(--cyan); padding: 2px 10px; border-radius: 100px;
+    background: rgba(56,212,232,0.1); border: 1px solid rgba(56,212,232,0.2);
+}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="session-header mb-4">
+        <div>
+            <h3 style="font-family:var(--font-heading); font-weight:600;">{{ session.title }}</h3>
+            <p class="text-muted mb-0" style="font-size:14px;">{{ session.course_code }}</p>
+        </div>
+        <div class="text-end">
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">SHARE THIS CODE</p>
+            <div class="session-code">{{ session.session_code }}</div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="card-dark p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div id="micStatus" class="mic-status" aria-label="Microphone status"></div>
+            <span id="micLabel" style="font-size:14px; color:var(--text-secondary);">Ready to start</span>
+            <span class="timer" id="sessionTimer">00:00</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="attendee-breakdown" id="attendeeBreakdown">
+                <span title="Total students"><strong id="totalCount">{{ attendees.count }}</strong> students</span>
+                <span class="badge-mode badge-caption">🔤 <span id="captionCount">0</span></span>
+                <span class="badge-mode badge-audio">🔊 <span id="audioCount">0</span></span>
+                <span class="badge-mode badge-sign">🤟 <span id="signCount">0</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Intelligence Panel -->
+    <div class="ai-panel mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="ai-badge-live">🧠 AI INSIGHTS — LIVE</span>
+            <span style="font-size:11px; color:var(--text-muted);" id="aiStatus">Waiting for speech...</span>
+        </div>
+        <div class="row g-2 mb-2">
+            <div class="col-3">
+                <div class="ai-metric">
+                    <div class="ai-metric-value" id="aiWPM">0</div>
+                    <div class="ai-metric-label">WPM</div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="ai-metric">
+                    <div class="ai-metric-value" id="aiWords">0</div>
+                    <div class="ai-metric-label">Words</div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="ai-metric">
+                    <div class="ai-metric-value" id="aiComplexity">0</div>
+                    <div class="ai-metric-label">Complexity</div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="ai-metric">
+                    <div class="ai-metric-value" id="aiTerms">0</div>
+                    <div class="ai-metric-label">Terms Found</div>
+                </div>
+            </div>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">Complexity</div>
+        <div class="complexity-gauge">
+            <div class="complexity-gauge-fill" id="complexityGauge" style="width:0%; background:var(--green);"></div>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:10px;">Detected Technical Terms</div>
+        <div class="detected-terms-list" id="detectedTermsList">
+            <span style="font-size:11px; color:var(--text-muted); font-style:italic;">None yet — start speaking!</span>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="card-dark p-4 mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div class="d-flex gap-2">
+                <button id="btnStart" class="btn btn-sikika" onclick="startCapture()" aria-label="Start speaking">🎙️ Start Speaking</button>
+                <button id="btnStop" class="btn btn-outline-sikika" onclick="stopCapture()" style="display:none;" aria-label="Stop speaking">⏹ Stop</button>
+            </div>
+            <div>
+                {% if session.status != 'ended' %}
+                <a href="{% url 'end_session' session.session_code %}" class="btn btn-sm" style="background:rgba(232,64,64,0.15); color:#e84040; border:1px solid rgba(232,64,64,0.2);" onclick="return confirm('End this session? Students will be disconnected.')">End Session</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Live Transcript -->
+        <div id="liveTranscript" role="log" aria-live="polite" aria-label="Live transcript" style="min-height:200px; max-height:400px; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:10px; padding:20px; font-size:18px; line-height:1.8; color:rgba(255,255,255,0.8);">
+            <p style="color:var(--text-muted); font-style:italic;">Click "Start Speaking" to begin the live session...</p>
+        </div>
+        <div id="currentLine" style="margin-top:12px; font-size:16px; color:rgba(232,168,56,0.7); min-height:24px;"></div>
+    </div>
+
+    <!-- Slide Upload & Management -->
+    <div class="card-dark p-3 mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 style="font-weight:600; margin:0;">Slides</h6>
+            <form method="post" action="{% url 'upload_slides' session.session_code %}" enctype="multipart/form-data" class="d-flex gap-2 align-items-center">
+                {% csrf_token %}
+                <input type="file" name="slides" accept="image/*" multiple class="form-control form-control-sm" style="max-width:250px; font-size:12px;">
+                <button type="submit" class="btn btn-sikika btn-sm">Upload</button>
+            </form>
+        </div>
+        {% if slides %}
+        <div class="slide-panel">
+            <div class="d-flex gap-2 flex-wrap" id="slideContainer">
+                {% for slide in slides %}
+                <img src="{{ slide.image.url }}" class="slide-thumb {% if forloop.first %}active{% endif %}" 
+                     data-slide="{{ slide.slide_number }}" data-desc="{{ slide.ai_description }}" data-total="{{ slides|length }}"
+                     onclick="broadcastSlide(this)" alt="Slide {{ slide.slide_number }}" title="Slide {{ slide.slide_number }}">
+                {% endfor %}
+            </div>
+            <p class="text-muted mt-2 mb-0" style="font-size:12px;" id="slideInfo">Slide 1 of {{ slides|length }}</p>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0" style="font-size:13px;">No slides uploaded yet. Upload images to share with students.</p>
+        {% endif %}
+    </div>
+
+    <!-- Post-session link -->
+    {% if session.status == 'ended' %}
+    <div class="card-dark p-3 text-center">
+        <p style="font-size:14px; color:var(--text-secondary);">Session has ended.</p>
+        <a href="{% url 'session_transcript' session.session_code %}" class="btn btn-sikika">View Full Transcript</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const sessionCode = '{{ session.session_code }}';
+const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+let ws;
+let recognition = null;
+let isCapturing = false;
+let timerInterval = null;
+let timerSeconds = 0;
+let totalWords = 0;
+let detectedTermsSet = new Set();
+let lastComplexity = 0;
+
+function connectWS() {
+    ws = new WebSocket(wsProtocol + '//' + window.location.host + '/ws/lecture/' + sessionCode + '/');
+    ws.onopen = () => console.log('WebSocket connected');
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'attendee_update') {
+            document.getElementById('totalCount').textContent = data.total;
+            document.getElementById('captionCount').textContent = data.caption;
+            document.getElementById('audioCount').textContent = data.audio;
+            document.getElementById('signCount').textContent = data.sign;
+        }
+        // AI: Process enriched transcript data
+        if (data.type === 'transcript' && data.is_final) {
+            updateAIPanel(data);
+        }
+    };
+    ws.onclose = () => {
+        console.log('WebSocket disconnected, reconnecting...');
+        setTimeout(connectWS, 2000);
+    };
+}
+connectWS();
+
+// AI Panel update from enriched WebSocket data
+function updateAIPanel(data) {
+    // Update WPM
+    if (data.wpm > 0) {
+        document.getElementById('aiWPM').textContent = Math.round(data.wpm);
+    }
+
+    // Count words
+    const words = data.text.trim().split(/\s+/).length;
+    totalWords += words;
+    document.getElementById('aiWords').textContent = totalWords;
+
+    // Update complexity
+    if (data.complexity > 0) {
+        lastComplexity = data.complexity;
+        document.getElementById('aiComplexity').textContent = Math.round(data.complexity);
+        const gauge = document.getElementById('complexityGauge');
+        gauge.style.width = data.complexity + '%';
+        if (data.complexity < 40) gauge.style.background = 'var(--green)';
+        else if (data.complexity < 70) gauge.style.background = 'var(--orange)';
+        else gauge.style.background = '#e84040';
+    }
+
+    // Update detected terms
+    if (data.detected_terms && data.detected_terms.length > 0) {
+        data.detected_terms.forEach(term => detectedTermsSet.add(term));
+        document.getElementById('aiTerms').textContent = detectedTermsSet.size;
+        const list = document.getElementById('detectedTermsList');
+        list.innerHTML = '';
+        detectedTermsSet.forEach(term => {
+            const tag = document.createElement('span');
+            tag.className = 'ai-term-tag';
+            tag.textContent = term;
+            list.appendChild(tag);
+        });
+    }
+
+    // Update status
+    document.getElementById('aiStatus').textContent = 
+        'WPM: ' + Math.round(data.wpm || 0) + ' | ' + (data.complexity_label || 'Analyzing...');
+}
+
+function startCapture() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Speech recognition not supported. Please use Chrome.');
+        return;
+    }
+
+    // Signal session start
+    ws.send(JSON.stringify({ type: 'session_start' }));
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                appendFinal(transcript);
+                ws.send(JSON.stringify({ type: 'transcript', text: transcript, is_final: true }));
+            } else {
+                interim += transcript;
+            }
+        }
+        document.getElementById('currentLine').textContent = interim;
+        if (interim) {
+            ws.send(JSON.stringify({ type: 'transcript', text: interim, is_final: false }));
+        }
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech error:', event.error);
+        if (event.error === 'no-speech' && isCapturing) {
+            recognition.stop();
+            recognition.start();
+        }
+    };
+
+    recognition.onend = () => {
+        if (isCapturing) recognition.start();
+    };
+
+    recognition.start();
+    isCapturing = true;
+
+    document.getElementById('btnStart').style.display = 'none';
+    document.getElementById('btnStop').style.display = 'inline-block';
+    document.getElementById('micStatus').classList.add('active');
+    document.getElementById('micLabel').textContent = 'Listening...';
+    document.getElementById('liveTranscript').innerHTML = '';
+
+    // Start timer
+    timerSeconds = 0;
+    timerInterval = setInterval(() => {
+        timerSeconds++;
+        const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+        const s = String(timerSeconds % 60).padStart(2, '0');
+        document.getElementById('sessionTimer').textContent = m + ':' + s;
+    }, 1000);
+}
+
+function stopCapture() {
+    isCapturing = false;
+    if (recognition) recognition.stop();
+
+    document.getElementById('btnStart').style.display = 'inline-block';
+    document.getElementById('btnStop').style.display = 'none';
+    document.getElementById('micStatus').classList.remove('active');
+    document.getElementById('micLabel').textContent = 'Paused';
+    document.getElementById('currentLine').textContent = '';
+
+    if (timerInterval) clearInterval(timerInterval);
+}
+
+function appendFinal(text) {
+    const el = document.getElementById('liveTranscript');
+    const span = document.createElement('span');
+    span.textContent = text + ' ';
+    el.appendChild(span);
+    el.scrollTop = el.scrollHeight;
+}
+
+function broadcastSlide(el) {
+    const slideNum = parseInt(el.dataset.slide);
+    const desc = el.dataset.desc || '';
+    const total = parseInt(el.dataset.total);
+
+    document.querySelectorAll('.slide-thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('slideInfo').textContent = 'Slide ' + slideNum + ' of ' + total;
+
+    ws.send(JSON.stringify({
+        type: 'slide_change',
+        slide_number: slideNum,
+        description: desc,
+        total_slides: total,
+    }));
+}
+
+// Heartbeat
+setInterval(() => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'heartbeat' }));
+    }
+}, 30000);
+</script>
+{% endblock %}

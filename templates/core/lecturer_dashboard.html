@@ -1,0 +1,61 @@
+{% extends 'core/base.html' %}
+{% block title %}Dashboard — SIKIKA{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="font-family:var(--font-heading); font-weight:600;">Your Sessions</h2>
+        <a href="{% url 'create_session' %}" class="btn btn-sikika">+ New Session</a>
+    </div>
+
+    {% if sessions %}
+    <div class="row g-3">
+        {% for s in sessions %}
+        <div class="col-md-4">
+            <div class="card-dark p-3">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 style="font-weight:600; margin-bottom:4px;">{{ s.title }}</h5>
+                        <p class="text-muted mb-2" style="font-size:13px;">{{ s.course_code }}</p>
+                    </div>
+                    {% if s.status == 'live' %}
+                    <span style="background:rgba(56,232,112,0.15); color:var(--green); padding:2px 10px; border-radius:100px; font-size:12px;">LIVE</span>
+                    {% elif s.status == 'waiting' %}
+                    <span style="background:rgba(232,168,56,0.15); color:var(--orange); padding:2px 10px; border-radius:100px; font-size:12px;">WAITING</span>
+                    {% else %}
+                    <span style="background:rgba(255,255,255,0.05); color:var(--text-muted); padding:2px 10px; border-radius:100px; font-size:12px;">Ended</span>
+                    {% endif %}
+                </div>
+                <p style="font-family:var(--font-heading); font-size:20px; font-weight:700; letter-spacing:4px; color:var(--orange); margin:12px 0 8px 0;">{{ s.session_code }}</p>
+
+                <!-- Stats row -->
+                <div class="d-flex gap-3" style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+                    <span>👥 {{ s.attendee_count }} students</span>
+                    <span>📝 {{ s.segment_count }} segments</span>
+                    {% if s.duration_minutes %}
+                    <span>🕐 {{ s.duration_minutes }}min</span>
+                    {% endif %}
+                </div>
+
+                <p class="text-muted" style="font-size:12px;">{{ s.created_at|date:"M d, Y H:i" }}</p>
+
+                {% if s.status == 'live' or s.status == 'waiting' %}
+                <a href="{% url 'lecturer_session' s.session_code %}" class="btn btn-sikika btn-sm w-100 mt-2">Open Session</a>
+                {% else %}
+                <div class="d-flex gap-2 mt-2">
+                    <a href="{% url 'session_summary' s.session_code %}" class="btn btn-sikika btn-sm flex-fill">🧠 AI Summary</a>
+                    <a href="{% url 'session_analytics' s.session_code %}" class="btn btn-outline-sikika btn-sm" title="Analytics">📊</a>
+                    <a href="{% url 'session_quiz' s.session_code %}" class="btn btn-outline-sikika btn-sm" title="Quiz">🧪</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card-dark p-5 text-center">
+        <p style="font-size:48px; margin-bottom:16px;">🎙️</p>
+        <p style="color:var(--text-secondary);">No sessions yet. Create your first one!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

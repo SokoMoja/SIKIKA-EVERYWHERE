@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIKIKA — Judge Executive Brief</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap');
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: #fff;
+            color: #0a1628;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 12mm 14mm 10mm 14mm;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* === HEADER === */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6mm;
+            padding-bottom: 4mm;
+            border-bottom: 3px solid #0a1628;
+        }
+
+        .brand {
+            flex: 1;
+        }
+
+        .brand h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36pt;
+            font-weight: 900;
+            color: #0a1628;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .brand .tagline {
+            font-size: 9pt;
+            font-weight: 500;
+            color: #e8a838;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 2mm;
+        }
+
+        .brand .subtitle {
+            font-size: 8pt;
+            color: #555;
+            margin-top: 1mm;
+            font-weight: 400;
+        }
+
+        .header-right {
+            text-align: right;
+            padding-top: 2mm;
+        }
+
+        .header-right .event {
+            font-size: 7.5pt;
+            font-weight: 600;
+            color: #0a1628;
+        }
+
+        .header-right .team {
+            font-size: 7pt;
+            color: #666;
+            margin-top: 1mm;
+        }
+
+        .qr-section {
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+            margin-top: 2mm;
+        }
+
+        .qr-box {
+            width: 18mm;
+            height: 18mm;
+            border: 2px solid #0a1628;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6pt;
+            color: #999;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .qr-label {
+            font-size: 6.5pt;
+            color: #e84040;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* === THE PROBLEM BAR === */
+        .problem-bar {
+            background: #0a1628;
+            color: #fff;
+            padding: 4mm 5mm;
+            border-radius: 4px;
+            margin-bottom: 5mm;
+        }
+
+        .problem-bar h2 {
+            font-size: 9pt;
+            font-weight: 700;
+            color: #e8a838;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2mm;
+        }
+
+        .problem-bar p {
+            font-size: 8pt;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .problem-bar strong { color: #e8a838; }
+        .problem-bar .highlight { color: #e84040; font-weight: 700; }
+
+        /* === STATS ROW === */
+        .stats-row {
+            display: flex;
+            gap: 3mm;
+            margin-bottom: 5mm;
+        }
+
+        .stat-card {
+            flex: 1;
+            text-align: center;
+            padding: 3mm 2mm;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .stat-card .number {
+            font-size: 18pt;
+            font-weight: 900;
+            color: #0a1628;
+            line-height: 1;
+        }
+
+        .stat-card .number.orange { color: #e8a838; }
+        .stat-card .number.red { color: #e84040; }
+        .stat-card .number.green { color: #1a8a4a; }
+
+        .stat-card .label {
+            font-size: 6pt;
+            color: #666;
+            margin-top: 1mm;
+            line-height: 1.3;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        /* === TWO COLUMN LAYOUT === */
+        .two-col {
+            display: flex;
+            gap: 5mm;
+            margin-bottom: 5mm;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 8pt;
+            font-weight: 800;
+            color: #0a1628;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 2mm;
+            padding-bottom: 1mm;
+            border-bottom: 2px solid #e8a838;
+        }
+
+        .section-title.red-border { border-bottom-color: #e84040; }
+        .section-title.green-border { border-bottom-color: #1a8a4a; }
+
+        /* === SOLUTION TABLE === */
+        .solution-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .solution-table td {
+            font-size: 7pt;
+            padding: 1.5mm 2mm;
+            vertical-align: top;
+            line-height: 1.4;
+        }
+
+        .solution-table tr:nth-child(even) { background: #f8f8f8; }
+
+        .solution-table .icon {
+            width: 6mm;
+            text-align: center;
+            font-size: 10pt;
+        }
+
+        .solution-table .feature {
+            font-weight: 700;
+            color: #0a1628;
+            white-space: nowrap;
+        }
+
+        .solution-table .desc { color: #444; }
+
+        .solution-table .status {
+            width: 8mm;
+            text-align: center;
+            font-size: 8pt;
+        }
+
+        /* === COMPARISON TABLE === */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1mm;
+        }
+
+        .compare-table th {
+            font-size: 6.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1.5mm 2mm;
+            text-align: left;
+            border-bottom: 1.5px solid #0a1628;
+            color: #0a1628;
+        }
+
+        .compare-table td {
+            font-size: 7pt;
+            padding: 1.5mm 2mm;
+            border-bottom: 0.5px solid #eee;
+            vertical-align: middle;
+        }
+
+        .compare-table tr:nth-child(even) td { background: #f8f8f8; }
+
+        .compare-table .bad { color: #e84040; font-weight: 600; }
+        .compare-table .good { color: #1a8a4a; font-weight: 600; }
+
+        /* === BUSINESS MODEL STRIP === */
+        .biz-strip {
+            background: linear-gradient(135deg, #0a1628 0%, #1a2a48 100%);
+            color: #fff;
+            padding: 4mm 5mm;
+            border-radius: 4px;
+            margin-bottom: 5mm;
+            display: flex;
+            gap: 4mm;
+        }
+
+        .biz-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .biz-item .biz-num {
+            font-size: 14pt;
+            font-weight: 900;
+            color: #e8a838;
+            line-height: 1;
+        }
+
+        .biz-item .biz-label {
+            font-size: 6pt;
+            color: rgba(255,255,255,0.7);
+            margin-top: 1mm;
+            line-height: 1.3;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .biz-divider {
+            width: 1px;
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* === IMPACT + TECH ROW === */
+        .impact-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .impact-list li {
+            font-size: 7pt;
+            padding: 1mm 0;
+            padding-left: 4mm;
+            position: relative;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .impact-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #e8a838;
+            font-weight: 700;
+        }
+
+        .impact-list li strong { color: #0a1628; }
+
+        /* === TECH PILLS === */
+        .tech-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5mm;
+            margin-top: 1mm;
+        }
+
+        .pill {
+            font-size: 6pt;
+            padding: 1mm 2.5mm;
+            border-radius: 2px;
+            font-weight: 600;
+            border: 1px solid #ddd;
+            color: #333;
+            background: #f8f8f8;
+        }
+
+        .pill.core { background: #0a1628; color: #fff; border-color: #0a1628; }
+        .pill.free { background: #fff; color: #1a8a4a; border-color: #1a8a4a; }
+
+        /* === FOOTER === */
+        .footer {
+            position: absolute;
+            bottom: 8mm;
+            left: 14mm;
+            right: 14mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 3mm;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer-left {
+            font-size: 6.5pt;
+            color: #999;
+        }
+
+        .footer-center {
+            text-align: center;
+        }
+
+        .footer-center .motto {
+            font-family: 'Playfair Display', serif;
+            font-size: 9pt;
+            font-style: italic;
+            color: #0a1628;
+        }
+
+        .footer-right {
+            text-align: right;
+            font-size: 6.5pt;
+            color: #999;
+        }
+
+        .footer-right a {
+            color: #e8a838;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* === PRINT === */
+        @media print {
+            body { margin: 0; }
+            .page { padding: 10mm 12mm 8mm 12mm; }
+            .no-print { display: none; }
+        }
+
+        /* === SCREEN HELPERS === */
+        @media screen {
+            body {
+                background: #e0e0e0;
+                padding: 20px 0;
+            }
+            .page {
+                background: #fff;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                margin: 0 auto;
+            }
+        }
+
+        /* Print button (screen only) */
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #0a1628;
+            color: #e8a838;
+            border: none;
+            padding: 10px 24px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .print-btn:hover { background: #1a2a48; }
+        @media print { .print-btn { display: none; } }
+
+        /* Flow diagram */
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2mm;
+            margin: 2mm 0;
+        }
+
+        .flow-box {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 1.5mm 3mm;
+            font-size: 6.5pt;
+            font-weight: 600;
+            text-align: center;
+            color: #0a1628;
+        }
+
+        .flow-box.dark {
+            background: #0a1628;
+            color: #e8a838;
+            border-color: #0a1628;
+        }
+
+        .flow-arrow {
+            font-size: 10pt;
+            color: #e8a838;
+            font-weight: 700;
+        }
+
+        .flow-branch {
+            display: flex;
+            flex-direction: column;
+            gap: 1mm;
+        }
+
+        .flow-box.deaf { border-left: 3px solid #e8a838; }
+        .flow-box.blind { border-left: 3px solid #38d4e8; }
+        .flow-box.all { border-left: 3px solid #1a8a4a; }
+    </style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print This Page</button>
+
+<div class="page">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="brand">
+            <h1>SIKIKA</h1>
+            <div class="tagline">"To Be Heard" — Swahili</div>
+            <div class="subtitle">AI-Powered Real-Time Lecture Accessibility — Zero Cost, Zero Hardware, Zero Interpreters</div>
+        </div>
+        <div class="header-right">
+            <div class="event">USIU-Africa Innovation Challenge 2026</div>
+            <div class="team">Team CAMPUS_IQ — Iranzi Innocent · Deogracia · Daisy</div>
+            <div class="qr-section">
+                <div class="qr-label">Scan to try<br>SIKIKA live →</div>
+                <div class="qr-box">QR CODE<br><span style="font-size:5pt">(place here)</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROBLEM BAR -->
+    <div class="problem-bar">
+        <h2>The Problem</h2>
+        <p>
+            University lectures are delivered through <strong>sound</strong> and <strong>sight</strong>. 
+            A deaf student can't access sound. A blind student can't access sight. Both paid full tuition. 
+            The current solution — human interpreters — costs <span class="highlight">$50K–$300K/yr</span>, covers only 
+            <span class="highlight">70–80%</span> of content, and Africa has just <strong>1 interpreter per 270,000 people</strong>. 
+            The math is impossible. <strong>You cannot hire enough humans. The supply does not exist.</strong>
+        </p>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="number red">466M</div>
+            <div class="label">People globally with<br>disabling hearing loss</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">2.2B</div>
+            <div class="label">People with vision<br>impairment worldwide</div>
+        </div>
+        <div class="stat-card">
+            <div class="number orange">~5,000</div>
+            <div class="label">Sign interpreters in<br>ALL of Sub-Saharan Africa</div>
+        </div>
+        <div class="stat-card">
+            <div class="number red">20–30%</div>
+            <div class="label">Content LOST even with<br>a human interpreter</div>
+        </div>
+        <div class="stat-card">
+            <div class="number green">$0.02</div>
+            <div class="label">SIKIKA's cost per<br>student-hour</div>
+        </div>
+    </div>
+
+    <!-- HOW IT WORKS (FLOW) -->
+    <div style="margin-bottom: 4mm;">
+        <div class="section-title" style="border-bottom-color: #0a1628;">How SIKIKA Works</div>
+        <div class="flow">
+            <div class="flow-box dark">🎤 Lecturer Speaks<br><span style="font-weight:400;font-size:5.5pt">into phone/laptop mic</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box dark">🧠 AI Processes<br><span style="font-weight:400;font-size:5.5pt">terms · complexity · emphasis</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-branch">
+                <div class="flow-box deaf">🔤 Smart Captions → Deaf Student</div>
+                <div class="flow-box blind">🔊 Audio Descriptions → Blind Student</div>
+                <div class="flow-box all">🤟 Sign Display → Sign-preferred</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="border-left: 3px solid #e8a838;">📚 Auto-Transcript<br>📝 AI Summary<br>🧪 Quiz Generated</div>
+        </div>
+    </div>
+
+    <!-- TWO COLUMN: SOLUTION + COMPARISON -->
+    <div class="two-col">
+        <div class="col">
+            <div class="section-title">What SIKIKA Delivers</div>
+            <table class="solution-table">
+                <tr>
+                    <td class="icon">🔤</td>
+                    <td class="feature">Smart Captions</td>
+                    <td class="desc">Live captions + term detection + definitions + emphasis markers</td>
+                    <td class="status">✅</td>
+                </tr>
+                <tr>
+                    <td class="icon">🔊</td>
+                    <td class="feature">Audio Mode</td>
+                    <td class="desc">Slide descriptions read aloud for blind students</td>
+                    <td class="status">✅</td>
+                </tr>
+                <tr>
+                    <td class="icon">🤟</td>
+                    <td class="feature">Sign Display</td>
+                    <td class="desc">Fingerspelling + curated sign vocabulary</td>
+                    <td class="status">✅</td>
+                </tr>
+                <tr>
+                    <td class="icon">✋</td>
+                    <td class="feature">Two-Way Q&A</td>
+                    <td class="desc">Deaf students type questions → lecturer receives them</td>
+                    <td class="status">✅</td>
+                </tr>
+                <tr>
+                    <td class="icon">🧠</td>
+                    <td class="feature">AI Intelligence</td>
+                    <td class="desc">Complexity scoring, WPM tracking, key point flagging</td>
+                    <td class="status">✅</td>
+                </tr>
+                <tr>
+                    <td class="icon">📝</td>
+                    <td class="feature">Auto Transcript</td>
+                    <td class="desc">Full searchable transcript, instant download</td>
+                    <td class="status">✅</td>
+                </tr>
+                <tr>
+                    <td class="icon">📚</td>
+                    <td class="feature">AI Study Tools</td>
+                    <td class="desc">Summary, key points, auto-generated quiz</td>
+                    <td class="status">✅</td>
+                </tr>
+                <tr>
+                    <td class="icon">⚡</td>
+                    <td class="feature">Pace Feedback</td>
+                    <td class="desc">Students alert lecturer if speaking too fast</td>
+                    <td class="status">✅</td>
+                </tr>
+                <tr>
+                    <td class="icon">📊</td>
+                    <td class="feature">Lecturer Analytics</td>
+                    <td class="desc">Real-time speech analytics to improve teaching</td>
+                    <td class="status">✅</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col">
+            <div class="section-title red-border">SIKIKA vs. Status Quo</div>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Interpreter</th>
+                        <th>SIKIKA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cost/student-hr</td>
+                        <td class="bad">$25–$60</td>
+                        <td class="good">$0.02</td>
+                    </tr>
+                    <tr>
+                        <td>Content captured</td>
+                        <td class="bad">70–80%</td>
+                        <td class="good">~100%</td>
+                    </tr>
+                    <tr>
+                        <td>Availability</td>
+                        <td class="bad">When they show up</td>
+                        <td class="good">Every lecture</td>
+                    </tr>
+                    <tr>
+                        <td>Technical terms</td>
+                        <td class="bad">Fingerspelled / skipped</td>
+                        <td class="good">Detected + defined</td>
+                    </tr>
+                    <tr>
+                        <td>Blind student support</td>
+                        <td class="bad">None</td>
+                        <td class="good">Full audio mode</td>
+                    </tr>
+                    <tr>
+                        <td>Post-lecture materials</td>
+                        <td class="bad">Nothing</td>
+                        <td class="good">Transcript + Quiz</td>
+                    </tr>
+                    <tr>
+                        <td>Student can ask Qs</td>
+                        <td class="bad">Slow, stigmatizing</td>
+                        <td class="good">Instant text Q&A</td>
+                    </tr>
+                    <tr>
+                        <td>Students per session</td>
+                        <td class="bad">1–2</td>
+                        <td class="good">Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Student stigma</td>
+                        <td class="bad">High</td>
+                        <td class="good">Zero</td>
+                    </tr>
+                    <tr>
+                        <td>Scales with enrollment</td>
+                        <td class="bad">Linear cost ↑</td>
+                        <td class="good">Zero marginal cost</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- BUSINESS MODEL STRIP -->
+    <div class="biz-strip">
+        <div class="biz-item">
+            <div class="biz-num">$730M</div>
+            <div class="biz-label">Total Addressable<br>Market (global)</div>
+        </div>
+        <div class="biz-divider"></div>
+        <div class="biz-item">
+            <div class="biz-num">$2.4M</div>
+            <div class="biz-label">Year 3 ARR Target<br>(200 institutions)</div>
+        </div>
+        <div class="biz-divider"></div>
+        <div class="biz-item">
+            <div class="biz-num">89–94%</div>
+            <div class="biz-label">Cost savings vs.<br>human interpreters</div>
+        </div>
+        <div class="biz-divider"></div>
+        <div class="biz-item">
+            <div class="biz-num">85%</div>
+            <div class="biz-label">Gross<br>margin</div>
+        </div>
+        <div class="biz-divider"></div>
+        <div class="biz-item">
+            <div class="biz-num">12:1</div>
+            <div class="biz-label">Social return on<br>investment (SROI)</div>
+        </div>
+    </div>
+
+    <!-- BOTTOM ROW: IMPACT + TECH -->
+    <div class="two-col">
+        <div class="col">
+            <div class="section-title green-border">Impact at Scale</div>
+            <ul class="impact-list">
+                <li><strong>5x–10x improvement</strong> in lecture content access for deaf students without interpreters</li>
+                <li><strong>12x–16x improvement</strong> in visual content access for blind students</li>
+                <li>Projected <strong>100–500 additional disabled graduates/year</strong> per country who would have otherwise dropped out</li>
+                <li>Institutions save <strong>$45K–$395K/year</strong> in interpreter costs while serving MORE students</li>
+                <li>Extends beyond lectures — <strong>social, group work, events</strong> all become accessible</li>
+                <li><strong>Every student benefits</strong> — transcripts, summaries, and quizzes are universally useful</li>
+            </ul>
+        </div>
+        <div class="col">
+            <div class="section-title">Technology — Zero Dependency</div>
+            <div class="tech-pills">
+                <span class="pill core">Django + Channels</span>
+                <span class="pill core">WebSocket Real-time</span>
+                <span class="pill core">Pure Python NLP</span>
+                <span class="pill free">Web Speech API — FREE</span>
+                <span class="pill free">Speech Synthesis — FREE</span>
+                <span class="pill free">No APIs — $0/session</span>
+                <span class="pill">Bootstrap 5</span>
+                <span class="pill">ARIA + WCAG 2.1</span>
+            </div>
+            <div style="margin-top: 3mm;">
+                <div class="section-title" style="margin-bottom: 1.5mm;">Why We Win</div>
+                <ul class="impact-list">
+                    <li><strong>Only tool serving deaf AND blind</strong> from one session</li>
+                    <li><strong>Africa-first</strong> — built for low bandwidth, mobile-first</li>
+                    <li><strong>Academic intelligence</strong> — not just transcription</li>
+                    <li><strong>Zero cost for students</strong> — browser only</li>
+                    <li><strong>Two-way communication</strong> — students can participate</li>
+                    <li>Institutions <strong>already spending more</strong> on worse solutions</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="footer-left">
+            Team CAMPUS_IQ · March 2026<br>
+            Iranzi Innocent · Deogracia · Daisy
+        </div>
+        <div class="footer-center">
+            <div class="motto">"We don't replace the interpreter. We replace the need for one."</div>
+        </div>
+        <div class="footer-right">
+            USIU-Africa Innovation Challenge<br>
+            <a href="#">sikika.africa</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

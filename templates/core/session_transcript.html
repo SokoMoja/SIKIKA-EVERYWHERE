@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+{% block title %}Transcript — {{ session.title }} — SIKIKA{% endblock %}
+
+{% block extra_css %}
+.transcript-header { background: var(--navy-light); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 24px; }
+.stat-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; font-size: 13px; color: var(--text-secondary); }
+.stat-pill strong { color: var(--orange); }
+.transcript-body { background: rgba(0,0,0,0.2); border-radius: 14px; padding: 30px; max-height: 70vh; overflow-y: auto; }
+.segment { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; gap: 16px; }
+.segment:last-child { border-bottom: none; }
+.seg-time { font-family: var(--font-heading); font-size: 13px; color: var(--orange); min-width: 60px; padding-top: 2px; }
+.seg-text { color: rgba(255,255,255,0.85); font-size: 16px; line-height: 1.7; }
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="{% url 'dashboard' %}" style="color:var(--text-muted); font-size:13px; text-decoration:none;">← Back to Dashboard</a>
+    </div>
+
+    <!-- Header with stats -->
+    <div class="transcript-header">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h3 style="font-family:var(--font-heading); font-weight:600; margin-bottom:4px;">{{ session.title }}</h3>
+                <p class="text-muted mb-0" style="font-size:14px;">{{ session.course_code }} &middot; {{ session.created_at|date:"F d, Y H:i" }}</p>
+            </div>
+            <div>
+                {% if session.status == 'ended' %}
+                <span style="background:rgba(255,255,255,0.05); color:var(--text-muted); padding:4px 12px; border-radius:100px; font-size:12px;">Ended</span>
+                {% else %}
+                <span style="background:rgba(56,232,112,0.15); color:var(--green); padding:4px 12px; border-radius:100px; font-size:12px;">{{ session.get_status_display }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-3 mt-3">
+            {% if duration %}
+            <span class="stat-pill">🕐 <strong>{{ duration }}</strong> min</span>
+            {% endif %}
+            <span class="stat-pill">👥 <strong>{{ attendees.count }}</strong> students</span>
+            {% if mode_counts.caption %}
+            <span class="stat-pill badge-caption">🔤 <strong>{{ mode_counts.caption }}</strong></span>
+            {% endif %}
+            {% if mode_counts.audio %}
+            <span class="stat-pill badge-audio">🔊 <strong>{{ mode_counts.audio }}</strong></span>
+            {% endif %}
+            {% if mode_counts.sign %}
+            <span class="stat-pill badge-sign">🤟 <strong>{{ mode_counts.sign }}</strong></span>
+            {% endif %}
+            <span class="stat-pill">📝 <strong>{{ segments.count }}</strong> segments</span>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h5 style="font-weight:600;">Full Transcript</h5>
+        <div class="d-flex gap-2">
+            <a href="{% url 'session_summary' session.session_code %}" class="btn btn-sikika btn-sm">🧠 AI Summary</a>
+            <a href="{% url 'session_analytics' session.session_code %}" class="btn btn-outline-sikika btn-sm">📊 Analytics</a>
+            <a href="{% url 'session_quiz' session.session_code %}" class="btn btn-outline-sikika btn-sm">🧪 Quiz</a>
+            <a href="{% url 'download_transcript' session.session_code %}" class="btn btn-outline-sikika btn-sm">📥 Download .txt</a>
+        </div>
+    </div>
+
+    <!-- Transcript -->
+    <div class="transcript-body" role="log" aria-label="Session transcript">
+        {% if segments %}
+            {% for seg in segments %}
+            <div class="segment">
+                <div class="seg-time">
+                    {% with mins=seg.seconds_from_start|floatformat:"0" %}
+                    {{ seg.seconds_from_start|divisibleby:60|default:"" }}
+                    {% endwith %}
+                    <span>{{ seg.seconds_from_start|floatformat:"0" }}s</span>
+                </div>
+                <div class="seg-text">{{ seg.text }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color:var(--text-muted); text-align:center; font-style:italic; padding:40px 0;">No transcript segments recorded.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

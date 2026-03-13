@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+{% block title %}Accessibility Settings — SIKIKA{% endblock %}
+{% block content %}
+<div class="container" style="max-width:500px; margin-top:60px;">
+    <div class="card-dark p-4">
+        <h2 style="font-family:var(--font-heading); font-weight:600; margin-bottom:8px;">Accessibility Settings</h2>
+        <p class="text-muted mb-4" style="font-size:14px;">Your preferences are saved and applied across all sessions.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Preferred Mode</label>
+                {{ form.preferred_mode }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Font Size</label>
+                {{ form.font_size }}
+            </div>
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    {{ form.high_contrast }}
+                    <label class="form-check-label" for="id_high_contrast" style="color:var(--text-secondary);">High Contrast Mode</label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    {{ form.dyslexia_font }}
+                    <label class="form-check-label" for="id_dyslexia_font" style="color:var(--text-secondary);">OpenDyslexic Font</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-sikika w-100 mt-2">Save Settings</button>
+        </form>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-sikika w-100 mt-2">← Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+    .form-select, select {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+        padding: 10px 14px;
+        width: 100%;
+    }
+    .form-check-input { cursor: pointer; }
+    .form-check-input:checked { background-color: var(--orange); border-color: var(--orange); }
+</style>
+{% endblock %}
